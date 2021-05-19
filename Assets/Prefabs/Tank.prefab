@@ -310,7 +310,8 @@ GameObject:
   - component: {fileID: 8919683811634787975}
   - component: {fileID: 4567500258855627177}
   - component: {fileID: 490210544441961817}
-  - component: {fileID: 8411590830168319643}
+  - component: {fileID: 6869050153665258033}
+  - component: {fileID: 7201504161692839633}
   m_Layer: 0
   m_Name: Tank
   m_TagString: Untagged
@@ -376,8 +377,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  rotateSpeed: 30
---- !u!114 &8411590830168319643
+  rotateSpeed: 120
+--- !u!114 &6869050153665258033
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -386,9 +387,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 8919683811639329611}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8fd1a39f328ac24fafad97e5457cac8, type: 3}
+  m_Script: {fileID: 11500000, guid: 485a534a684fe5747aef8840d6df4351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_cannonBallPrefab: {fileID: 5169621074470352626, guid: 750e08f5860a6ad45bf5036ebaba1dab,
+    type: 3}
+--- !u!114 &7201504161692839633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8919683811639329611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bac3332950ca91640ae088de29bc5695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_playerInputScheme: 0
 --- !u!1 &8919683811639329613
 GameObject:
   m_ObjectHideFlags: 0

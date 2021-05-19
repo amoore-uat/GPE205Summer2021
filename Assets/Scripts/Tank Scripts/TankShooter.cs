@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class TankShooter : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public GameObject m_cannonBallPrefab;
 
-    // Update is called once per frame
-    void Update()
+    public void Shoot()
     {
-        
+        // TODO: Cooldown Timer on Shooting.
+        Debug.Log("Pew Pew");
+        // TODO: Instantiate a cannon ball.
+        // TODO: Add force to the cannon ball.
     }
 }
