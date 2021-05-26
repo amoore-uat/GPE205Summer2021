@@ -9,4 +9,5 @@ public class TankData : MonoBehaviour
     public float secondsPerShot = 1f;
     public float cannonBallForce = 1f;
     public float damagePerShot = 1f;
+    public float maxHealth = 100f;
 }

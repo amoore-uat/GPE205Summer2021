@@ -9,5 +9,10 @@ public class AttackedTakeDamage : MonoBehaviour, IAttackable
     public void OnAttacked(Attack attackData)
     {
         currentHP -= attackData.m_damage;
+
+        // This is an example of referencing a variable in a game manager
+        // GameManager.Instance.Player = this.gameObject;
+        // This class is getting removed after we finish this milestone.
+        // TODO: Nuke this class.
     }
 }

@@ -342,7 +342,7 @@ GameObject:
   - component: {fileID: 490210544441961817}
   - component: {fileID: 6869050153665258033}
   - component: {fileID: 7201504161692839633}
-  - component: {fileID: 1395655944343247506}
+  - component: {fileID: 5212607279373540200}
   m_Layer: 0
   m_Name: Tank
   m_TagString: Untagged
@@ -411,8 +411,9 @@ MonoBehaviour:
   moveSpeed: 5
   rotateSpeed: 120
   secondsPerShot: 1
-  cannonBallForce: 1
+  cannonBallForce: 20
   damagePerShot: 1
+  maxHealth: 100
 --- !u!114 &6869050153665258033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,7 +443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerInputScheme: 0
---- !u!114 &1395655944343247506
+--- !u!114 &5212607279373540200
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -451,11 +452,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8919683811639329611}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 493b612c98fa79c438bbe7fbdcae5090, type: 3}
+  m_Script: {fileID: 11500000, guid: fdd510d7d013d584481407b9d45c4b58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentHP: 10
-  maxHP: 10
 --- !u!1 &8919683811639329613
 GameObject:
   m_ObjectHideFlags: 0
