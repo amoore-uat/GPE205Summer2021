@@ -31,7 +31,11 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MoveTowards(new Vector3(2, 0, 10));
+        if (AimedAtAPlayer())
+        {
+            m_shooter.Shoot();
+        }
+        MoveAwayFrom(new Vector3(0, 0, 0));
     }
 
     // Move towards a target position.
@@ -51,7 +55,7 @@ public class AIController : MonoBehaviour
                     // Don't move if we've already arrived at our destination.
                     if (!IsCloseEnough(targetPosition))
                     {
-                        if (CanSee(targetPosition, m_data.moveSpeed))
+                        if (CanMove(m_data.moveSpeed))
                         {
                             m_motor.Move(m_data.moveSpeed);
                         }
@@ -63,28 +67,33 @@ public class AIController : MonoBehaviour
                 }
                 break;
             case AvoidanceState.RotatingToAvoid:
+                Debug.Log("Rotating to avoid");
                 // Rotate until we can move forward
                 m_motor.Rotate(m_data.rotateSpeed);
                 // if we can move forward, then switch to moving to avoid.
-                if (CanSee(transform.forward, m_data.moveSpeed))
+                if (CanMove(m_data.moveSpeed))
                 {
                     avoidance = AvoidanceState.MovingToAvoid;
                     avoidanceTimer = avoidanceTime;
                 }
                 break;
             case AvoidanceState.MovingToAvoid:
-                // move forward for a number of seconds.
-                m_motor.Move(m_data.moveSpeed);
-                avoidanceTimer -= Time.deltaTime;
+                
                 // if timer runs down, switch to not avoiding
                 if (avoidanceTimer <= 0)
                 {
                     avoidance = AvoidanceState.NotAvoiding;
                 }
                 // if we're about to run into something, switch to rotating
-                else if (!CanSee(transform.forward, m_data.moveSpeed))
+                else if (!CanMove(m_data.moveSpeed))
                 {
                     avoidance = AvoidanceState.RotatingToAvoid;
+                }
+                else
+                {
+                    // move forward for a number of seconds.
+                    m_motor.Move(m_data.moveSpeed);
+                    avoidanceTimer -= Time.deltaTime;
                 }
                 break;
         }        
@@ -138,13 +147,34 @@ public class AIController : MonoBehaviour
         }
     }
 
-    public bool CanSee(Vector3 targetPosition, float distance)
+    public bool CanMove(float distance)
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, GetVectorToTarget(targetPosition), out hit, distance * 5f))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, distance))
         {
             return false;
         }
         return true;
+    }
+
+    public void MoveAwayFrom(Vector3 targetPosition)
+    {
+        Vector3 vectorAwayFromTarget = -1 * GetVectorToTarget(targetPosition);
+        vectorAwayFromTarget.Normalize();
+        Vector3 fleePosition = (vectorAwayFromTarget * m_data.moveSpeed) + transform.position;
+        Debug.Log(fleePosition);
+        MoveTowards(fleePosition);
+    }
+
+    public bool AimedAtAPlayer()
+    {
+        // TODO: Implement a method that detects when the ai is aimed at something it should shoot.
+        return false;
+    }
+
+    public bool CanSee(GameObject targetObject)
+    {
+        // TODO: Implement a method that detects if the ai can see a object
+        return false;
     }
 }
