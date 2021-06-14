@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,11 +10,18 @@ public class AIController : MonoBehaviour
 {
     public enum PatrolType { PingPong, Stop, Loop};
     public enum AvoidanceState { NotAvoiding, RotatingToAvoid, MovingToAvoid };
+    public enum AIPersonality { Aggressive };
+    public enum AIState { Idle, Patrol, ChaseAndFire };
+    public AIState currentAIState = AIState.Idle;
+    public AIPersonality personality;
     public AvoidanceState avoidance = AvoidanceState.NotAvoiding;
     public GameObject[] m_waypoints;
     public float closeEnough = 1f; // A distance from a location that is close enough to consider ourselves there.
     public float avoidanceTime = 1f;
     private float avoidanceTimer;
+    private float stateEnterTime;
+    private GameObject seenPlayer;
+    public float FOV = 60f;
 
     private TankData m_data;
     private TankMotor m_motor;
@@ -31,11 +39,78 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (AimedAtAPlayer())
+        RunFiniteStateMachine();
+    }
+
+    private void RunFiniteStateMachine()
+    {
+        switch (personality)
         {
-            m_shooter.Shoot();
+            case AIPersonality.Aggressive:
+                AggressiveFSM();
+                break;
+            default:
+                Debug.LogWarning("[AIController] Unimplemented AI Personality");
+                break;
         }
-        MoveAwayFrom(new Vector3(0, 0, 0));
+    }
+
+    private void AggressiveFSM()
+    {
+        switch (currentAIState)
+        {
+            case AIState.Idle:
+                ChangeState(AIState.Patrol);
+                break;
+            case AIState.ChaseAndFire:
+                // Do Behavior
+                ChaseAndFire(seenPlayer);
+                // Check for transitions
+                if (!CanSee(seenPlayer))
+                {
+                    ChangeState(AIState.Patrol);
+                }
+                break;
+            case AIState.Patrol:
+                // Do Behavior
+                Patrol(PatrolType.PingPong);
+                // Check for transitions
+                foreach (GameObject player in GameManager.Instance.Players)
+                {
+                    if (CanSee(player))
+                    {
+                        ChangeState(AIState.ChaseAndFire);
+                        seenPlayer = player;
+                        break;
+                    }
+                }
+                break;
+        }
+    }
+
+    private void ChaseAndFire(GameObject targetObject)
+    {
+        if (targetObject == null)
+        {
+            Debug.LogWarning("[AIController - ChaseAndFire] Target object is null");
+            return;
+        }
+        // Move toward our target
+        MoveTowards(targetObject.transform.position);
+        // Shoot
+        m_shooter.Shoot();
+    }
+
+    private void ChangeState(AIState newState)
+    {
+        currentAIState = newState;
+        stateEnterTime = Time.time;
+    }
+
+    private void ChangeState(AvoidanceState newState)
+    {
+        avoidance = newState;
+        avoidanceTimer = avoidanceTime;
     }
 
     // Move towards a target position.
@@ -61,7 +136,7 @@ public class AIController : MonoBehaviour
                         }
                         else
                         {
-                            avoidance = AvoidanceState.RotatingToAvoid;
+                            ChangeState(AvoidanceState.RotatingToAvoid);
                         }
                     }
                 }
@@ -73,8 +148,8 @@ public class AIController : MonoBehaviour
                 // if we can move forward, then switch to moving to avoid.
                 if (CanMove(m_data.moveSpeed))
                 {
-                    avoidance = AvoidanceState.MovingToAvoid;
-                    avoidanceTimer = avoidanceTime;
+                    ChangeState(AvoidanceState.MovingToAvoid);
+                    //avoidanceTimer = avoidanceTime;
                 }
                 break;
             case AvoidanceState.MovingToAvoid:
@@ -82,12 +157,12 @@ public class AIController : MonoBehaviour
                 // if timer runs down, switch to not avoiding
                 if (avoidanceTimer <= 0)
                 {
-                    avoidance = AvoidanceState.NotAvoiding;
+                    ChangeState(AvoidanceState.NotAvoiding);
                 }
                 // if we're about to run into something, switch to rotating
                 else if (!CanMove(m_data.moveSpeed))
                 {
-                    avoidance = AvoidanceState.RotatingToAvoid;
+                    ChangeState(AvoidanceState.RotatingToAvoid);
                 }
                 else
                 {
@@ -174,7 +249,17 @@ public class AIController : MonoBehaviour
 
     public bool CanSee(GameObject targetObject)
     {
-        // TODO: Implement a method that detects if the ai can see a object
+        // Check to see if the target is in the field of view.
+        float angleToTarget = Vector3.Angle(GetVectorToTarget(targetObject.transform.position), transform.forward);
+        if (angleToTarget <= (FOV/2f))
+        {
+            // Check to see if there are things between us and the target
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, targetObject.transform.position, out hit))
+            {
+                return (hit.collider.gameObject == targetObject);
+            }
+        }
         return false;
     }
 }
