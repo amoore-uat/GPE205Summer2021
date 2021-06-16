@@ -21,12 +21,13 @@ public class AIController : MonoBehaviour
     private float avoidanceTimer;
     private float stateEnterTime;
     private GameObject seenPlayer;
-    public float FOV = 60f;
+    public float fieldOfView = 60f;
+    public int currentWayPoint;
+    private bool moveForward = true;
 
     private TankData m_data;
     private TankMotor m_motor;
     private TankShooter m_shooter;
-    
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +40,7 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         RunFiniteStateMachine();
     }
 
@@ -84,6 +86,9 @@ public class AIController : MonoBehaviour
                         break;
                     }
                 }
+                break;
+            default:
+                ChangeState(AIState.Idle);
                 break;
         }
     }
@@ -208,17 +213,54 @@ public class AIController : MonoBehaviour
             Debug.LogWarning(gameObject.name + " [AIController - Patrol] Attempting to loop through empty array of waypoints.");
             return;
         }
-        switch (patrolType)
+        MoveTowards(m_waypoints[currentWayPoint].transform.position);
+        if (IsCloseEnough(m_waypoints[currentWayPoint].transform.position))
         {
-            case PatrolType.PingPong:
-                break;
-            case PatrolType.Loop:
-                break;
-            case PatrolType.Stop:
-                break;
-            default:
-                Debug.LogWarning(gameObject.name + " [AIController - Patrol] Unimplemented Patrol Type.");
-                break;
+            switch (patrolType)
+            {
+                case PatrolType.PingPong:
+                    // go in reverse through waypoints after final waypoint.
+                    if (moveForward)
+                    {
+                        if (currentWayPoint < (m_waypoints.Length - 1))
+                        {
+                            currentWayPoint++;
+                        }
+                        else
+                        {
+                            moveForward = !moveForward;
+                        }
+                    }
+                    else
+                    {
+                        if (currentWayPoint > 0)
+                        {
+                            currentWayPoint--;
+                        }
+                        else
+                        {
+                            moveForward = !moveForward;
+                        }
+                    }
+                    break;
+                case PatrolType.Loop:
+                    // go to first waypoint after final waypoint.
+                    // Modulo (%) lets us get the remainder from integer division.
+                    // 1/4 is 0 remainder 1. 4/4 is 1 remainder 0.
+                    // This lets us loop through the waypoints without using an if statement.
+                    currentWayPoint = ((currentWayPoint + 1) % 4);
+                    break;
+                case PatrolType.Stop:
+                    // stop at final waypoint.
+                    if (currentWayPoint < (m_waypoints.Length - 1))
+                    {
+                        currentWayPoint++;
+                    }
+                    break;
+                default:
+                    Debug.LogWarning(gameObject.name + " [AIController - Patrol] Unimplemented Patrol Type.");
+                    break;
+            }
         }
     }
 
@@ -241,25 +283,52 @@ public class AIController : MonoBehaviour
         MoveTowards(fleePosition);
     }
 
-    public bool AimedAtAPlayer()
+    public void Flee(GameObject targetObject)
     {
-        // TODO: Implement a method that detects when the ai is aimed at something it should shoot.
-        return false;
+        MoveAwayFrom(targetObject.transform.position);
     }
 
     public bool CanSee(GameObject targetObject)
     {
-        // Check to see if the target is in the field of view.
-        float angleToTarget = Vector3.Angle(GetVectorToTarget(targetObject.transform.position), transform.forward);
-        if (angleToTarget <= (FOV/2f))
+        // We use the location of our target in a number of calculations - store it in a variable for easy access.
+        Vector3 targetPosition = targetObject.transform.position;
+
+        // Find the vector from the agent to the target
+        // We do this by subtracting "destination minus origin", so that "origin plus vector equals destination."
+        Vector3 agentToTargetVector = GetVectorToTarget(targetObject.transform.position);
+
+        // Find the angle between the direction our agent is facing (forward in local space) and the vector to the target.
+        float angleToTarget = Vector3.Angle(agentToTargetVector, transform.forward);
+
+        // if that angle is less than our field of view
+        if (angleToTarget < fieldOfView)
         {
-            // Check to see if there are things between us and the target
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, targetObject.transform.position, out hit))
+            // Create a variable to hold a ray from our position to the target
+            Ray rayToTarget = new Ray();
+
+            // Set the origin of the ray to our position, and the direction to the vector to the target
+            rayToTarget.origin = transform.position;
+            rayToTarget.direction = agentToTargetVector;
+
+            // Create a variable to hold information about anything the ray collides with
+            RaycastHit hitInfo;
+
+            // Cast our ray for infinity in the direciton of our ray.
+            //    -- If we hit something...
+            if (Physics.Raycast(rayToTarget, out hitInfo, Mathf.Infinity))
             {
-                return (hit.collider.gameObject == targetObject);
+                // ... and that something is our target 
+                if (hitInfo.collider.gameObject == targetObject)
+                {
+                    // return true 
+                    //    -- note that this will exit out of the function, so anything after this functions like an else
+                    return true;
+                }
             }
         }
+        // return false
+        //   -- note that because we returned true when we determined we could see the target, 
+        //      this will only run if we hit nothing or if we hit something that is not our target.
         return false;
     }
 }
