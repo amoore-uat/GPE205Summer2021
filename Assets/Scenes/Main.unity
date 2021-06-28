@@ -1166,8 +1166,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0502a2e6e61814f428aa0a99595fb3b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_rows: 1
-  m_columns: 100
+  m_mapSeed: 0
+  m_rows: 3
+  m_columns: 3
+  m_seedType: 2
   gridPrefabs:
   - {fileID: 9081642404496393001, guid: d25e4a6d26fa64c41814c69c628fe97e, type: 3}
   - {fileID: 1262538099422063807, guid: 9532d485242abc34fa14b2f5873338ea, type: 3}

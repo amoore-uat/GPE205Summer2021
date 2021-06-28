@@ -1,11 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
+    public int m_mapSeed;
     public int m_rows = 3;
     public int m_columns = 3;
+    public enum RandomSeedType { RANDOM, MAPOFTHEDAY, SEEDED};
+    public RandomSeedType m_seedType;
     private float m_roomWidth = 50.0f;
     private float m_roomHeight = 50.0f;
     private Room[,] m_rooms;
@@ -23,7 +27,7 @@ public class MapGenerator : MonoBehaviour
     {
         if (gridPrefabs.Length >= 1)
         {
-            return gridPrefabs[Random.Range(0, gridPrefabs.Length)];
+            return gridPrefabs[UnityEngine.Random.Range(0, gridPrefabs.Length)];
         }
         else
         {
@@ -33,12 +37,38 @@ public class MapGenerator : MonoBehaviour
 
     public void SpawnPlayers()
     {
-        TankSpawner randomSpawnPoint = GameManager.Instance.tankSpawnPoints[Random.Range(0, m_rooms.Length)];
+        TankSpawner randomSpawnPoint = GameManager.Instance.tankSpawnPoints[UnityEngine.Random.Range(0, m_rooms.Length)];
         randomSpawnPoint.SpawnTank(GameManager.Instance.playerPrefab);
     }
 
+    public int DateToInt(DateTime dateToUse)
+    {
+        // Add our date up and return it
+        return dateToUse.Year + dateToUse.Month + dateToUse.Day + dateToUse.Hour + dateToUse.Minute + dateToUse.Second + dateToUse.Millisecond;
+    }
+
+
     public void GenerateGrid()
     {
+        // Seed the random number generator.
+        switch (m_seedType)
+        {
+            case RandomSeedType.MAPOFTHEDAY:
+                m_mapSeed = DateToInt(DateTime.Today);
+                UnityEngine.Random.InitState(m_mapSeed);
+                break;
+            case RandomSeedType.RANDOM:
+                m_mapSeed = DateToInt(DateTime.Now);
+                UnityEngine.Random.InitState(m_mapSeed);
+                break;
+            case RandomSeedType.SEEDED:
+                UnityEngine.Random.InitState(m_mapSeed);
+                break;
+            default:
+                Debug.Log("[MapGenerator - Generate Grid] Unknown seed type");
+                break;
+
+        }
         for (int row = 0; row < m_rows; row++)
         {
             for (int column = 0; column < m_columns; column++)
