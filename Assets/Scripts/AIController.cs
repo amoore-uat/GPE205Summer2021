@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum AIPersonality { Aggressive };
+
+
 [RequireComponent(typeof(TankData))]
 [RequireComponent(typeof(TankMotor))]
 [RequireComponent(typeof(TankShooter))]
@@ -10,7 +13,6 @@ public class AIController : MonoBehaviour
 {
     public enum PatrolType { PingPong, Stop, Loop};
     public enum AvoidanceState { NotAvoiding, RotatingToAvoid, MovingToAvoid };
-    public enum AIPersonality { Aggressive };
     public enum AIState { Idle, Patrol, ChaseAndFire };
     public AIState currentAIState = AIState.Idle;
     public AIPersonality personality;

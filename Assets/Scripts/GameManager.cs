@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] Players = new GameObject[2];
     public List<TankSpawner> tankSpawnPoints = new List<TankSpawner>();
     public GameObject playerPrefab;
+    public int numberOfPlayers = 1;
 
     private void Awake()
     {
