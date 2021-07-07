@@ -11,13 +11,13 @@ public enum AIPersonality { Aggressive };
 [RequireComponent(typeof(TankShooter))]
 public class AIController : MonoBehaviour
 {
-    public enum PatrolType { PingPong, Stop, Loop};
+    public enum PatrolType { PingPong, Stop, Loop };
     public enum AvoidanceState { NotAvoiding, RotatingToAvoid, MovingToAvoid };
     public enum AIState { Idle, Patrol, ChaseAndFire };
     public AIState currentAIState = AIState.Idle;
     public AIPersonality personality;
     public AvoidanceState avoidance = AvoidanceState.NotAvoiding;
-    public GameObject[] m_waypoints;
+    public List<GameObject> m_waypoints = new List<GameObject>();
     public float closeEnough = 1f; // A distance from a location that is close enough to consider ourselves there.
     public float avoidanceTime = 1f;
     private float avoidanceTimer;
@@ -26,6 +26,8 @@ public class AIController : MonoBehaviour
     public float fieldOfView = 60f;
     public int currentWayPoint;
     private bool moveForward = true;
+    private GameObject m_randomWaypoint;
+    public int m_waypointsToGenerate = 3;
 
     private TankData m_data;
     private TankMotor m_motor;
@@ -42,7 +44,7 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
         RunFiniteStateMachine();
     }
 
@@ -160,7 +162,7 @@ public class AIController : MonoBehaviour
                 }
                 break;
             case AvoidanceState.MovingToAvoid:
-                
+
                 // if timer runs down, switch to not avoiding
                 if (avoidanceTimer <= 0)
                 {
@@ -178,7 +180,7 @@ public class AIController : MonoBehaviour
                     avoidanceTimer -= Time.deltaTime;
                 }
                 break;
-        }        
+        }
     }
 
     public void RotateTowards(Vector3 targetPosition)
@@ -210,9 +212,13 @@ public class AIController : MonoBehaviour
 
     public void Patrol(PatrolType patrolType)
     {
-        if (m_waypoints.Length < 1)
+        if (m_waypoints.Count < 1)
         {
-            Debug.LogWarning(gameObject.name + " [AIController - Patrol] Attempting to loop through empty array of waypoints.");
+            for (int i = 0; i < m_waypointsToGenerate; i++)
+            {
+                m_waypoints.Add(GameManager.Instance.GetRandomWaypoint());
+            }
+            Debug.LogWarning(gameObject.name + " [AIController - Patrol] Attempting to loop through empty array of waypoints. Getting new waypoints.");
             return;
         }
         MoveTowards(m_waypoints[currentWayPoint].transform.position);
@@ -224,7 +230,7 @@ public class AIController : MonoBehaviour
                     // go in reverse through waypoints after final waypoint.
                     if (moveForward)
                     {
-                        if (currentWayPoint < (m_waypoints.Length - 1))
+                        if (currentWayPoint < (m_waypoints.Count - 1))
                         {
                             currentWayPoint++;
                         }
@@ -254,7 +260,7 @@ public class AIController : MonoBehaviour
                     break;
                 case PatrolType.Stop:
                     // stop at final waypoint.
-                    if (currentWayPoint < (m_waypoints.Length - 1))
+                    if (currentWayPoint < (m_waypoints.Count - 1))
                     {
                         currentWayPoint++;
                     }
@@ -264,6 +270,26 @@ public class AIController : MonoBehaviour
                     break;
             }
         }
+    }
+
+    public void Wander()
+    {
+
+        if (m_randomWaypoint == null)
+        {
+            // Get a random waypoint if we don't already have one.
+            m_randomWaypoint = GameManager.Instance.GetRandomWaypoint();
+        }
+        else
+        {
+            // Move to it.
+            MoveTowards(m_randomWaypoint.transform.position);
+            if (IsCloseEnough(m_randomWaypoint.transform.position))
+            {
+                m_randomWaypoint = null;
+            }
+        }
+
     }
 
     public bool CanMove(float distance)

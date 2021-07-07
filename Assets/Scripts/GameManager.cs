@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public List<TankSpawner> tankSpawnPoints = new List<TankSpawner>();
     public GameObject playerPrefab;
     public int numberOfPlayers = 1;
+    public List<GameObject> allWaypoints = new List<GameObject>();
 
     private void Awake()
     {
@@ -19,6 +20,19 @@ public class GameManager : MonoBehaviour
         else
         {
             Instance = this;
+        }
+    }
+
+    public GameObject GetRandomWaypoint()
+    {
+        if (allWaypoints.Count < 1)
+        {
+            Debug.LogWarning("There are no waypoints");
+            return null;
+        }
+        else
+        {
+            return allWaypoints[Random.Range(0, allWaypoints.Count)];
         }
     }
 }
