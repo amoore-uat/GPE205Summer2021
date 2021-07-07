@@ -14,7 +14,7 @@ public class MapGenerator : MonoBehaviour
     private float m_roomHeight = 50.0f;
     private Room[,] m_rooms;
 
-    public GameObject enemyTankPrefab;
+    
 
     public GameObject[] gridPrefabs;
 
@@ -23,8 +23,8 @@ public class MapGenerator : MonoBehaviour
         // Clear out the grid - "which column" is our X, "which row" is our Y
         m_rooms = new Room[m_columns, m_rows];
         GenerateGrid();
-        SpawnPlayerTanks(2);
-        SpawnEnemyTanks();
+        GameManager.Instance.SpawnPlayerTanks(2);
+        GameManager.Instance.SpawnEnemyTanks();
     }
 
     public GameObject RandomRoomPrefab()
@@ -43,44 +43,9 @@ public class MapGenerator : MonoBehaviour
     /// Finds an available spawn point and spawns in a tank at that point.
     /// </summary>
     /// <param name="TankToSpawn"></param>
-    public GameObject SpawnTank(GameObject TankToSpawn)
-    {
-        List<TankSpawner> availableSpawners = new List<TankSpawner>();
-        foreach (TankSpawner spawnPoint in GameManager.Instance.tankSpawnPoints)
-        {
-            if (!spawnPoint.HasTank)
-            {
-                availableSpawners.Add(spawnPoint);
-            }
-        }
-        TankSpawner randomSpawnPoint = GetRandomSpawnPoint(availableSpawners);
-        GameObject spawnedTank = randomSpawnPoint.SpawnTank(TankToSpawn);
-        return spawnedTank;
-    }
 
-    public void SpawnEnemyTanks()
-    {
-        // We need to spawn at least one of each personality.
-        // Spawn the aggressive personality.
-        GameObject enemyTank = SpawnTank(enemyTankPrefab);
-        enemyTank.GetComponent<AIController>().personality = AIPersonality.Aggressive;
-        enemyTank.gameObject.name = "Aggressive Enemy Tank";
-    }
 
-    public void SpawnPlayerTanks(int numberOfTanks)
-    {
-        for (int i=0;i<numberOfTanks;i++)
-        {
-            GameObject spawnedPlayer = SpawnTank(GameManager.Instance.playerPrefab);
-            GameManager.Instance.Players[i] = spawnedPlayer;
-            spawnedPlayer.gameObject.name = "Player " + (i + 1);
-        }
-    }
 
-    private TankSpawner GetRandomSpawnPoint(List<TankSpawner> availableSpawners)
-    {
-        return availableSpawners[UnityEngine.Random.Range(0, availableSpawners.Count)];
-    }
 
     public int DateToInt(DateTime dateToUse)
     {
