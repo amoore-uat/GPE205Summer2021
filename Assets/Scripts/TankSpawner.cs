@@ -23,7 +23,7 @@ public class TankSpawner : MonoBehaviour
     /// <param name="tank"></param>
     public GameObject SpawnTank(GameObject tank)
     {
-        m_spawnedTank = Instantiate(tank, this.transform.position, Quaternion.identity);
+        m_spawnedTank = Instantiate(tank, this.transform.position, this.transform.rotation);
         return m_spawnedTank;
     }
 }
