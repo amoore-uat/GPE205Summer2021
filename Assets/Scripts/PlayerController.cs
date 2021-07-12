@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
         switch (m_playerInputScheme)
         {
             case InputScheme.ArrowKeys:
+                m_motor.Move(0f);
                 break;
             case InputScheme.WASD:
                 // Handle Movement

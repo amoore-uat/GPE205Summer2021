@@ -23,7 +23,7 @@ public class MapGenerator : MonoBehaviour
         // Clear out the grid - "which column" is our X, "which row" is our Y
         m_rooms = new Room[m_columns, m_rows];
         GenerateGrid();
-        GameManager.Instance.SpawnPlayerTanks(2);
+        GameManager.Instance.SpawnPlayerTanks(GameManager.Instance.numberOfPlayers);
         GameManager.Instance.SpawnEnemyTanks();
     }
 

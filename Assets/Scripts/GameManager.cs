@@ -71,8 +71,24 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < numberOfTanks; i++)
         {
             GameObject spawnedPlayer = SpawnTank(GameManager.Instance.playerPrefab);
-            GameManager.Instance.Players[i] = spawnedPlayer;
+            Players[i] = spawnedPlayer;
             spawnedPlayer.gameObject.name = "Player " + (i + 1);
+        }
+        if (numberOfTanks == 1)
+        {
+            // We need a reference to the camera to be able to adjust it.
+            Camera camera = Players[0].GetComponentInChildren<Camera>();
+            camera.rect = new Rect(0f, 0f, 1f, 1f);
+        }
+        else
+        {
+            // Adjust camera for player 1
+            Camera camera = Players[0].GetComponentInChildren<Camera>();
+            camera.rect = new Rect(0f, 0f, 0.5f, 1f);
+            // Adjust camera for player 2
+            camera = Players[1].GetComponentInChildren<Camera>();
+            camera.rect = new Rect(0.5f, 0f, 0.5f, 1f);
+            Players[1].GetComponent<PlayerController>().m_playerInputScheme = PlayerController.InputScheme.ArrowKeys;
         }
     }
 
