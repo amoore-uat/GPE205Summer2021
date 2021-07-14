@@ -11,16 +11,19 @@ public class GameManager : MonoBehaviour
     public int numberOfPlayers = 1;
     public List<GameObject> allWaypoints = new List<GameObject>();
     public GameObject enemyTankPrefab;
+    
+    public RandomSeedType m_seedType;
 
     private void Awake()
     {
         if (Instance != null)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
         else
         {
             Instance = this;
+            DontDestroyOnLoad(this.gameObject);
         }
     }
 

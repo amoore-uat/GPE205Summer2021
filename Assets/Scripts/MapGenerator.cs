@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum RandomSeedType { RANDOM, MAPOFTHEDAY, SEEDED };
+
 public class MapGenerator : MonoBehaviour
 {
     public int m_mapSeed;
     public int m_rows = 3;
     public int m_columns = 3;
-    public enum RandomSeedType { RANDOM, MAPOFTHEDAY, SEEDED};
-    public RandomSeedType m_seedType;
+    
     private float m_roomWidth = 50.0f;
     private float m_roomHeight = 50.0f;
     private Room[,] m_rooms;
@@ -57,7 +58,7 @@ public class MapGenerator : MonoBehaviour
     public void GenerateGrid()
     {
         // Seed the random number generator.
-        switch (m_seedType)
+        switch (GameManager.Instance.m_seedType)
         {
             case RandomSeedType.MAPOFTHEDAY:
                 m_mapSeed = DateToInt(DateTime.Today);
