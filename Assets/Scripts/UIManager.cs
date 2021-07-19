@@ -6,17 +6,27 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
+    // Buttons
     [SerializeField] private Button startButton;
     [SerializeField] private Button optionsButton;
+    [SerializeField] private Button backButton;
     [SerializeField] private Button quitButton;
+
+    // Dropdowns
     [SerializeField] private Dropdown mapGeneratorDropdown;
+
+    // Screens
+    [SerializeField] private GameObject mainMenuScreen;
+    [SerializeField] private GameObject optionsMenuScreen;
 
     private void Start()
     {
         startButton.onClick.AddListener(StartGame);
-        // TODO: Implement options button.
+        backButton.onClick.AddListener(ShowMainMenu);
+        optionsButton.onClick.AddListener(ShowOptions);
         quitButton.onClick.AddListener(QuitGame);
         mapGeneratorDropdown.onValueChanged.AddListener(ChangeMapSeedType);
+        mapGeneratorDropdown.value = (int)GameManager.Instance.m_seedType;
     }
 
     public void StartGame()
@@ -31,7 +41,21 @@ public class UIManager : MonoBehaviour
 
     public void ChangeMapSeedType(int seedType)
     {
-        Debug.Log(seedType);
+        GameManager.Instance.m_seedType = (RandomSeedType) seedType;
+        Debug.Log(GameManager.Instance.m_seedType);
     }
-    
+
+    public void ShowOptions()
+    {
+        Debug.Log("Attempting to show options");
+        optionsMenuScreen.SetActive(true);
+        mainMenuScreen.SetActive(false);
+    }
+
+    public void ShowMainMenu()
+    {
+        optionsMenuScreen.SetActive(false);
+        mainMenuScreen.SetActive(true);
+    }
+
 }

@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(this.gameObject);
+            // Load Options Data only if this is the correct game manager.
+            LoadOptionsData();
         }
     }
 
@@ -95,5 +97,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SaveOptionsData()
+    {
+        PlayerPrefs.SetInt("MAPSEEDTYPE", (int)m_seedType);
+        // Save data after modifying the values
+        PlayerPrefs.Save();
+    }
 
+    public void LoadOptionsData()
+    {
+        m_seedType = (RandomSeedType)PlayerPrefs.GetInt("MAPSEEDTYPE", 0);
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveOptionsData();
+    }
 }
