@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,7 +12,12 @@ public class GameManager : MonoBehaviour
     public int numberOfPlayers = 1;
     public List<GameObject> allWaypoints = new List<GameObject>();
     public GameObject enemyTankPrefab;
-    
+    public float masterVolume;
+
+    // Components
+    public AudioMixer mixer;
+
+
     public RandomSeedType m_seedType;
 
     private void Awake()
@@ -107,10 +113,24 @@ public class GameManager : MonoBehaviour
     public void LoadOptionsData()
     {
         m_seedType = (RandomSeedType)PlayerPrefs.GetInt("MAPSEEDTYPE", 0);
+        masterVolume = PlayerPrefs.GetFloat("MASTERVOLUME", 1f);
+        ChangeMasterVolume(masterVolume);
+        
     }
 
     private void OnApplicationQuit()
     {
         SaveOptionsData();
+    }
+
+    public void ChangeMasterVolume(float newVolume)
+    {
+        masterVolume = newVolume;
+        mixer.SetFloat("MasterVolume", AdjustVolume(masterVolume));
+    }
+
+    public float AdjustVolume(float volume)
+    {
+        return Mathf.Log10(volume) * 20f;
     }
 }

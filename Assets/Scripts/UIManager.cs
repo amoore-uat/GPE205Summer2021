@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class UIManager : MonoBehaviour
 {
@@ -19,8 +20,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject mainMenuScreen;
     [SerializeField] private GameObject optionsMenuScreen;
 
+    // Sliders
+    [SerializeField] private Slider masterVolumeSlider;
+    [SerializeField] private Slider musicVolumeSlider;
+    [SerializeField] private Slider SFXVolumeSlider;
+
     private void Start()
     {
+        masterVolumeSlider.value = GameManager.Instance.masterVolume;
+        masterVolumeSlider.onValueChanged.AddListener(OnMasterVolumeChanged);
         startButton.onClick.AddListener(StartGame);
         backButton.onClick.AddListener(ShowMainMenu);
         optionsButton.onClick.AddListener(ShowOptions);
@@ -58,4 +66,9 @@ public class UIManager : MonoBehaviour
         mainMenuScreen.SetActive(true);
     }
 
+    public void OnMasterVolumeChanged(float newVolume)
+    {
+        PlayerPrefs.SetFloat("MASTERVOLUME", newVolume);
+        GameManager.Instance.ChangeMasterVolume(newVolume);
+    }
 }
