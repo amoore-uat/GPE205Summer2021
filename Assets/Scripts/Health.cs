@@ -1,15 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
+public class TankKilledEvent : UnityEvent<GameObject> { }
 
 [RequireComponent(typeof(TankData))]
 public class Health : MonoBehaviour, IAttackable
 {
+    public TankKilledEvent OnTankKilled;
     private TankData m_data;
     private float m_currentHealth;
 
     private void Start()
     {
+        OnTankKilled.AddListener(GameManager.Instance.HandleTankKilled);
         m_data = gameObject.GetComponent<TankData>();
 
         if (m_data != null)
@@ -50,6 +55,8 @@ public class Health : MonoBehaviour, IAttackable
     {
         // Do the death stuff.
         // TODO: Award points to the tank that killed this tank if they should earn points.
+        // Tell Game Manager that a tank died.
+        OnTankKilled.Invoke(this.gameObject);
         Debug.Log("Tank was killed");
         Destroy(this.gameObject);
     }

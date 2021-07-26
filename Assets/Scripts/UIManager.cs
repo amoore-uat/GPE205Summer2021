@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
 
     // Dropdowns
     [SerializeField] private Dropdown mapGeneratorDropdown;
+    [SerializeField] private Dropdown playerNumberDropdown;
 
     // Screens
     [SerializeField] private GameObject mainMenuScreen;
@@ -35,6 +36,8 @@ public class UIManager : MonoBehaviour
         quitButton.onClick.AddListener(QuitGame);
         mapGeneratorDropdown.onValueChanged.AddListener(ChangeMapSeedType);
         mapGeneratorDropdown.value = (int)GameManager.Instance.m_seedType;
+        playerNumberDropdown.onValueChanged.AddListener(ChangeNumberOfPlayers);
+        playerNumberDropdown.value = GameManager.Instance.numberOfPlayers - 1;
     }
 
     public void StartGame()
@@ -51,6 +54,11 @@ public class UIManager : MonoBehaviour
     {
         GameManager.Instance.m_seedType = (RandomSeedType) seedType;
         Debug.Log(GameManager.Instance.m_seedType);
+    }
+
+    public void ChangeNumberOfPlayers(int numberOfPlayers)
+    {
+        GameManager.Instance.numberOfPlayers = numberOfPlayers + 1;
     }
 
     public void ShowOptions()

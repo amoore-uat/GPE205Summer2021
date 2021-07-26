@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public GameObject[] Players = new GameObject[2];
+    public List<GameObject> Players = new List<GameObject>();
+    public int[] PlayerLives = new int[2];
     public List<TankSpawner> tankSpawnPoints = new List<TankSpawner>();
     public GameObject playerPrefab;
     public int numberOfPlayers = 1;
     public List<GameObject> allWaypoints = new List<GameObject>();
     public GameObject enemyTankPrefab;
     public float masterVolume;
+    public int livesToStartWith = 3;
 
     // Components
     public AudioMixer mixer;
@@ -82,8 +85,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < numberOfTanks; i++)
         {
             GameObject spawnedPlayer = SpawnTank(GameManager.Instance.playerPrefab);
-            Players[i] = spawnedPlayer;
+            Players.Add(spawnedPlayer);
             spawnedPlayer.gameObject.name = "Player " + (i + 1);
+            PlayerLives[i] = livesToStartWith;
         }
         if (numberOfTanks == 1)
         {
@@ -127,6 +131,41 @@ public class GameManager : MonoBehaviour
     {
         masterVolume = newVolume;
         mixer.SetFloat("MasterVolume", AdjustVolume(masterVolume));
+    }
+
+    public void HandleTankKilled(GameObject killedTank)
+    {
+        // Check to see if the tank was a player
+        for (int i = 0; i < numberOfPlayers; i++)
+        {
+            if (killedTank == Players[i])
+            {
+                PlayerLives[i] -= 1;
+                if (PlayerLives[i] > 0)
+                {
+                    // Respawn the player if they have lives
+                    Players[i] = SpawnTank(playerPrefab);
+                    return;
+                }
+                else
+                {
+                    int sum = 0;
+                    foreach (int lives in PlayerLives)
+                    {
+                        sum += lives;
+                    }
+                    if (sum < 1)
+                    {
+                        // Actual Game Over
+                        SceneManager.LoadScene("GameOver");
+                    }
+                    else
+                    {
+                        // Other player still going
+                    }
+                }
+            }
+        }
     }
 
     public float AdjustVolume(float volume)
