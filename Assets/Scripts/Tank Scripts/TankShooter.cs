@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(TankData))]
 public class TankShooter : MonoBehaviour
 {
@@ -9,9 +10,11 @@ public class TankShooter : MonoBehaviour
     public GameObject m_cannonBallPrefab;
     public float m_cooldownTimer = 0f;
     public GameObject m_firePoint;
+    public AudioSource audioSource;
 
     private void Start()
     {
+        audioSource = gameObject.GetComponent<AudioSource>();
         m_data = gameObject.GetComponent<TankData>();
     }
 
@@ -28,6 +31,8 @@ public class TankShooter : MonoBehaviour
         if (CanShoot())
         {
             Debug.Log("Pew Pew");
+            // Play the shooting sound effect
+            audioSource.Play();
             // Instantiate a cannon ball.
             GameObject cannonBall = Instantiate(m_cannonBallPrefab, m_firePoint.transform.position, Quaternion.identity);
             // Add force to the cannon ball.

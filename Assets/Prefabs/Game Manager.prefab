@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8490608742772622766}
   - component: {fileID: 8490608742772622765}
+  - component: {fileID: 4125233812079428460}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -74,3 +75,11 @@ MonoBehaviour:
     name: Nobody
   mixer: {fileID: 0}
   m_seedType: 0
+--- !u!81 &4125233812079428460
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8490608742772622764}
+  m_Enabled: 1

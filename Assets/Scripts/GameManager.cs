@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> allWaypoints = new List<GameObject>();
     public GameObject enemyTankPrefab;
     public float masterVolume;
+    public float sfxVolume = 1f;
     public int livesToStartWith = 3;
     public List<ScoreData> highScoreTable = new List<ScoreData>();
 

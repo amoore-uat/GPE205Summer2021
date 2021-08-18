@@ -11,6 +11,7 @@ public class Health : MonoBehaviour, IAttackable
     [SerializeField] public TankKilledEvent OnTankKilled;
     private TankData m_data;
     private float m_currentHealth;
+    public AudioClip deathSoundEffect;
 
     private void Start()
     {
@@ -60,6 +61,11 @@ public class Health : MonoBehaviour, IAttackable
 
     public void Die(Attack attackData)
     {
+        if (deathSoundEffect != null)
+        {
+            float soundEffectVolume = GameManager.Instance.masterVolume * GameManager.Instance.sfxVolume;
+            AudioSource.PlayClipAtPoint(deathSoundEffect, transform.position, soundEffectVolume);
+        }
         // Do the death stuff.
         // Award points to the tank that killed this tank if they should earn points.
         for (int i=0; i<=GameManager.Instance.Players.Count-1; i++)

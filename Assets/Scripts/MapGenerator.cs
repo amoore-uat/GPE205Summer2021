@@ -40,11 +40,6 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Finds an available spawn point and spawns in a tank at that point.
-    /// </summary>
-    /// <param name="TankToSpawn"></param>
-
 
 
 
