@@ -20,6 +20,8 @@ MonoBehaviour:
   avoidanceTime: 1
   fieldOfView: 60
   currentWayPoint: 0
+  m_waypointsToGenerate: 3
+  aggressiveMaterial: {fileID: 2100000, guid: 5fe3128675713fa499383c0c1934d637, type: 2}
 --- !u!114 &7239243114029921101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,6 +34,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 456677c616a49414b84245f0bda14257, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_activePowerups: []
 --- !u!1001 &6978703578034619168
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43,6 +46,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EnemyTank
+      objectReference: {fileID: 0}
+    - target: {fileID: 490210544441961817, guid: 3d742a3ccf0e103419e7aed03a746268,
+        type: 3}
+      propertyPath: maxHealth
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8919683811639762795, guid: 3d742a3ccf0e103419e7aed03a746268,
         type: 3}
@@ -99,12 +107,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8919683811641531777, guid: 3d742a3ccf0e103419e7aed03a746268,
+    - target: {fileID: 8919683811641531779, guid: 3d742a3ccf0e103419e7aed03a746268,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 5a6bb1ce0d262704191775f49502cea9, type: 2}
-    - target: {fileID: 8919683811641531779, guid: 3d742a3ccf0e103419e7aed03a746268,
+    - target: {fileID: 8919683811641531777, guid: 3d742a3ccf0e103419e7aed03a746268,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

@@ -46,6 +46,12 @@ MonoBehaviour:
   Players:
   - {fileID: 0}
   - {fileID: 0}
+  PlayerLives: 0000000000000000
+  PlayerScores:
+  - score: 0
+    name: 
+  - score: 0
+    name: 
   tankSpawnPoints: []
   playerPrefab: {fileID: 6267567451379565360, guid: 565896339ca754d4c9b0e6ef04b8bff9,
     type: 3}
@@ -53,3 +59,18 @@ MonoBehaviour:
   allWaypoints: []
   enemyTankPrefab: {fileID: 1950129862028083307, guid: b7653fb88b5bd62419868ec9afe12244,
     type: 3}
+  masterVolume: 0
+  livesToStartWith: 3
+  highScoreTable:
+  - score: 0
+    name: Nobody
+  - score: 0
+    name: Nobody
+  - score: 0
+    name: Nobody
+  - score: 0
+    name: Nobody
+  - score: 0
+    name: Nobody
+  mixer: {fileID: 0}
+  m_seedType: 0

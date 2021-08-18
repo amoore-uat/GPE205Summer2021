@@ -26,6 +26,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Slider musicVolumeSlider;
     [SerializeField] private Slider SFXVolumeSlider;
 
+    // Input Fields
+    [SerializeField] private InputField playerOneName;
+    [SerializeField] private InputField playerTwoName;
+
     private void Start()
     {
         masterVolumeSlider.value = GameManager.Instance.masterVolume;
@@ -38,6 +42,8 @@ public class UIManager : MonoBehaviour
         mapGeneratorDropdown.value = (int)GameManager.Instance.m_seedType;
         playerNumberDropdown.onValueChanged.AddListener(ChangeNumberOfPlayers);
         playerNumberDropdown.value = GameManager.Instance.numberOfPlayers - 1;
+        playerOneName.onValueChanged.AddListener(UpdateNameOne);
+        playerTwoName.onValueChanged.AddListener(UpdateNameTwo);
     }
 
     public void StartGame()
@@ -48,6 +54,16 @@ public class UIManager : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void UpdateNameOne(string nameToUse)
+    {
+        GameManager.Instance.PlayerScores[0].name = nameToUse;
+    }
+
+    public void UpdateNameTwo(string nameToUse)
+    {
+        GameManager.Instance.PlayerScores[1].name = nameToUse;
     }
 
     public void ChangeMapSeedType(int seedType)

@@ -28,6 +28,12 @@ public class PlayerController : MonoBehaviour
                 m_motor.Move(0f);
                 break;
             case InputScheme.WASD:
+                // DEBUG: For testing player death.
+                if (Input.GetKeyDown(KeyCode.K))
+                {
+                    Debug.Log("die");
+                    GetComponent<Health>().Die(new Attack(GameManager.Instance.gameObject, 0f));
+                }
                 // Handle Movement
                 if (Input.GetKey(KeyCode.W))
                 {

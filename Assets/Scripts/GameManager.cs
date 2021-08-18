@@ -7,15 +7,17 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public List<GameObject> Players = new List<GameObject>();
-    public int[] PlayerLives = new int[2];
-    public List<TankSpawner> tankSpawnPoints = new List<TankSpawner>();
+    public  List<GameObject> Players = new List<GameObject>();
+    public  int[] PlayerLives = new int[2];
+    public ScoreData[] PlayerScores = new ScoreData[2];
+    public  List<TankSpawner> tankSpawnPoints = new List<TankSpawner>();
     public GameObject playerPrefab;
     public int numberOfPlayers = 1;
     public List<GameObject> allWaypoints = new List<GameObject>();
     public GameObject enemyTankPrefab;
     public float masterVolume;
     public int livesToStartWith = 3;
+    public List<ScoreData> highScoreTable = new List<ScoreData>();
 
     // Components
     public AudioMixer mixer;
@@ -36,6 +38,8 @@ public class GameManager : MonoBehaviour
             // Load Options Data only if this is the correct game manager.
             LoadOptionsData();
         }
+        PlayerScores[0] = new ScoreData();
+        PlayerScores[1] = new ScoreData();
     }
 
     public GameObject GetRandomWaypoint()
@@ -58,12 +62,14 @@ public class GameManager : MonoBehaviour
         GameObject enemyTank = SpawnTank(enemyTankPrefab);
         enemyTank.GetComponent<AIController>().personality = AIPersonality.Aggressive;
         enemyTank.gameObject.name = "Aggressive Enemy Tank";
+        // Change tank color
+        enemyTank.GetComponent<AIController>().ChangeTankColors();
     }
 
     public GameObject SpawnTank(GameObject TankToSpawn)
     {
         List<TankSpawner> availableSpawners = new List<TankSpawner>();
-        foreach (TankSpawner spawnPoint in GameManager.Instance.tankSpawnPoints)
+        foreach (TankSpawner spawnPoint in tankSpawnPoints)
         {
             if (!spawnPoint.HasTank)
             {
@@ -84,7 +90,7 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < numberOfTanks; i++)
         {
-            GameObject spawnedPlayer = SpawnTank(GameManager.Instance.playerPrefab);
+            GameObject spawnedPlayer = SpawnTank(playerPrefab);
             Players.Add(spawnedPlayer);
             spawnedPlayer.gameObject.name = "Player " + (i + 1);
             PlayerLives[i] = livesToStartWith;
@@ -145,10 +151,31 @@ public class GameManager : MonoBehaviour
                 {
                     // Respawn the player if they have lives
                     Players[i] = SpawnTank(playerPrefab);
+                    Players[i].name = "Player " + i + 1;
+                    // If multiplayer, adjust the camera
+                    if (numberOfPlayers == 1)
+                    {
+                        // We need a reference to the camera to be able to adjust it.
+                        Camera camera = Players[0].GetComponentInChildren<Camera>();
+                        camera.rect = new Rect(0f, 0f, 1f, 1f);
+                    }
+                    else
+                    {
+                        // Adjust camera for player 1
+                        Camera camera = Players[0].GetComponentInChildren<Camera>();
+                        camera.rect = new Rect(0f, 0f, 0.5f, 1f);
+                        // Adjust camera for player 2
+                        camera = Players[1].GetComponentInChildren<Camera>();
+                        camera.rect = new Rect(0.5f, 0f, 0.5f, 1f);
+                        Players[1].GetComponent<PlayerController>().m_playerInputScheme = PlayerController.InputScheme.ArrowKeys;
+                    }
+
                     return;
                 }
                 else
                 {
+                    // Detach the camera.
+                    Players[i].GetComponentInChildren<Camera>().transform.SetParent(GameManager.Instance.transform, true);
                     int sum = 0;
                     foreach (int lives in PlayerLives)
                     {
@@ -157,6 +184,11 @@ public class GameManager : MonoBehaviour
                     if (sum < 1)
                     {
                         // Actual Game Over
+                        // Update the high score table with each player's score.
+                        for (int j=0; j < numberOfPlayers; j++)
+                        {
+                            UpdateHighScoreTable(PlayerScores[j]);
+                        }
                         SceneManager.LoadScene("GameOver");
                     }
                     else
@@ -171,5 +203,13 @@ public class GameManager : MonoBehaviour
     public float AdjustVolume(float volume)
     {
         return Mathf.Log10(volume) * 20f;
+    }
+
+    public void UpdateHighScoreTable(ScoreData scoreToAdd)
+    {
+        highScoreTable.Add(scoreToAdd);
+        highScoreTable.Sort();
+        highScoreTable.Reverse();
+        highScoreTable = highScoreTable.GetRange(0, 5);
     }
 }

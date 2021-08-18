@@ -28,6 +28,7 @@ public class AIController : MonoBehaviour
     private bool moveForward = true;
     private GameObject m_randomWaypoint;
     public int m_waypointsToGenerate = 3;
+    public Material aggressiveMaterial;
 
     private TankData m_data;
     private TankMotor m_motor;
@@ -292,6 +293,24 @@ public class AIController : MonoBehaviour
 
     }
 
+    public void ChangeTankColors()
+    {
+        // Get all of the mesh renderers for the tank.
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        // Set color based on current personality
+        switch (personality)
+        {
+            case AIPersonality.Aggressive:
+                foreach (MeshRenderer renderer in renderers)
+                {
+                    renderer.material = aggressiveMaterial;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     public bool CanMove(float distance)
     {
         RaycastHit hit;
@@ -318,6 +337,7 @@ public class AIController : MonoBehaviour
 
     public bool CanSee(GameObject targetObject)
     {
+        if (targetObject == null) { return false; }
         // We use the location of our target in a number of calculations - store it in a variable for easy access.
         Vector3 targetPosition = targetObject.transform.position;
 
